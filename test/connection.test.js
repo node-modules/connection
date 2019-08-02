@@ -178,6 +178,44 @@ describe('test/connection.test.js', () => {
     });
   });
 
+  describe('oneway', () => {
+    afterEach(async () => {
+      await clientConn.close();
+      await serverConn.await('close');
+    });
+
+    describe('oneway encode failed', () => {
+      beforeEach(() => {
+        mm(Encoder.prototype, 'writeRequest', (id, req, err) => {
+          return err(new Error('mock error'));
+        });
+      });
+
+      it('should throw encode error', async () => {
+        const req = Object.assign({ timeout: 50 }, FOO_REQUEST);
+        const errorEvent = clientConn.await('error');
+        clientConn.oneway(req);
+        let error;
+        try {
+          await errorEvent;
+        } catch (e) {
+          error = e;
+        }
+        assert(error);
+        assert(error.name === 'RpcOneWayEncodeError');
+        assert(/mock error/.test(error.message));
+      });
+    });
+
+    it('should work', async () => {
+      const requestEvent = serverConn.await('request');
+      const req = Object.assign({ timeout: 50 }, FOO_REQUEST);
+      clientConn.oneway(req);
+      const serverReceivedReq = await requestEvent;
+      assert.deepStrictEqual(serverReceivedReq.data, FOO_REQUEST);
+    });
+  });
+
   describe('decode error', () => {
 
     describe('request decode failed', () => {
