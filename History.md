@@ -1,4 +1,10 @@
 
+1.2.0 / 2020-08-25
+==================
+
+**features**
+  * [[`60afa93`](http://github.com/node-modules/connection/commit/60afa939ea28bc637ef76c2ce6226f293df61e08)] - feat: add protocolOptions (killagu <<killa123@126.com>>)
+
 1.1.0 / 2019-08-02
 ==================
 
