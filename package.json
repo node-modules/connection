@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "description": "wrap for socket",
   "dependencies": {
+    "@types/node": "^14.11.8",
     "await-event": "^2.1.0",
     "await-first": "^1.0.0",
     "pump": "^3.0.0",
@@ -10,14 +11,15 @@
   },
   "files": [
     "lib",
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "scripts": {
     "autod": "autod",
     "lint": "eslint . --ext .js",
-    "cov": "TEST_TIMEOUT=10000 egg-bin cov",
+    "cov": "TEST_TIMEOUT=1000 egg-bin cov",
     "test": "npm run lint && npm run test-local",
-    "test-local": "egg-bin test",
+    "test-local": "TEST_TIMEOUT=1000 egg-bin test",
     "pkgfiles": "egg-bin pkgfiles --check",
     "ci": "npm run autod -- --check && npm run pkgfiles && npm run lint && npm run cov",
     "contributors": "contributors -f plain -o AUTHORS"
@@ -45,7 +47,6 @@
     "eslint": "^5.2.0",
     "eslint-config-egg": "^7.0.0",
     "mm": "^2.2.2",
-    "mz-modules": "^2.1.0",
     "sofa-bolt-node": "^1.1.1"
   },
   "engines": {

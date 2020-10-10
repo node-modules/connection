@@ -4,7 +4,6 @@ const net = require('net');
 const assert = require('assert');
 const awaitEvent = require('await-event');
 const mm = require('mm');
-const sleep = require('mz-modules/sleep');
 
 const Connection = require('../lib/connection');
 const Decoder = require('sofa-bolt-node/lib/decoder');
@@ -308,7 +307,7 @@ describe('test/connection.test.js', () => {
           assert(error);
           assert(error.message === 'mock error, 127.0.0.1:12200');
         }
-        await sleep(50);
+        await serverConn.await('close');
         assert(clientConn._closed === true);
         assert(serverConn._closed === true);
         assert(clientConn.socket.destroyed === true);
@@ -356,17 +355,18 @@ describe('test/connection.test.js', () => {
         const requestEvent = serverConn.await('request');
         const req = Object.assign({ timeout: 50 }, FOO_REQUEST);
         const resPromise = clientConn.writeRequest(req);
-        let clientReceivedRes;
-        setTimeout(() => {
-          (async () => {
-            const serverReceivedReq = await requestEvent;
-            const res = Object.assign({}, FOO_RESPONSE);
-            await serverConn.writeResponse(serverReceivedReq, res);
-            clientReceivedRes = await resPromise;
-          })();
-        }, 20);
-        await clientConn.close();
-        await sleep(50);
+
+        const closePromise = clientConn.close();
+
+        const serverReceivedReq = await requestEvent;
+        const res = Object.assign({}, FOO_RESPONSE);
+        await serverConn.writeResponse(serverReceivedReq, res);
+        const clientReceivedRes = await resPromise;
+
+        await Promise.all([
+          closePromise,
+          serverConn.await('close'),
+        ]);
 
         assert(clientConn._closed === true);
         assert(serverConn._closed === true);
@@ -386,8 +386,12 @@ describe('test/connection.test.js', () => {
 
     describe('close with error', () => {
       it('should emit error', async () => {
+        const clientClosePromise = clientConn.await('close');
         await clientConn.close(new Error('mock error'));
-        await sleep(50);
+        await Promise.all([
+          clientClosePromise,
+          serverConn.await('close'),
+        ]);
 
         assert(clientConn._closed === true);
         assert(serverConn._closed === true);
@@ -414,11 +418,12 @@ describe('test/connection.test.js', () => {
           writeError = err;
         });
 
-        await sleep(10);
+        await serverConn.await('request');
 
-        serverConn.forceClose();
-
-        await clientConn.close();
+        await Promise.all([
+          serverConn.forceClose(),
+          clientConn.close(),
+        ]);
 
 
         server.close();
@@ -470,20 +475,18 @@ describe('test/connection.test.js', () => {
         clientConn.writeRequest(req).catch(e => {
           requestError = e;
         });
-        setTimeout(() => {
-          (async () => {
-            const serverReceivedReq = await requestEvent;
-            const res = Object.assign({}, FOO_RESPONSE);
-            try {
-              await serverConn.writeResponse(serverReceivedReq, res);
-              console.log('write response done!');
-            } catch (e) {
-              responseError = e;
-            }
-          })();
-        }, 30);
+
+        const serverReceivedReq = await requestEvent;
+        const serverClosePromise = serverConn.await('close');
         await clientConn.forceClose();
-        await sleep(50);
+        await serverClosePromise;
+
+        const res = Object.assign({}, FOO_RESPONSE);
+        try {
+          await serverConn.writeResponse(serverReceivedReq, res);
+        } catch (e) {
+          responseError = e;
+        }
 
         assert(clientConn._closed === true);
         assert(serverConn._closed === true);
@@ -532,19 +535,17 @@ describe('test/connection.test.js', () => {
         clientConn.writeRequest(req).catch(e => {
           requestError = e;
         });
-        setTimeout(() => {
-          (async () => {
-            const serverReceivedReq = await requestEvent;
-            const res = Object.assign({}, FOO_RESPONSE);
-            try {
-              await serverConn.writeResponse(serverReceivedReq, res);
-            } catch (e) {
-              responseError = e;
-            }
-          })();
-        }, 20);
+
+        const serverReceivedReq = await requestEvent;
+        const serverClosePromise = serverConn.await('close');
         await clientConn.forceClose(new Error('mock error'));
-        await sleep(50);
+        await serverClosePromise;
+        const res = Object.assign({}, FOO_RESPONSE);
+        try {
+          await serverConn.writeResponse(serverReceivedReq, res);
+        } catch (e) {
+          responseError = e;
+        }
 
         assert(clientConn._closed === true);
         assert(serverConn._closed === true);

@@ -76,7 +76,7 @@ describe('connect.test.js', () => {
       error = e;
     } finally {
       assert(error);
-      assert(error.name === 'RpcSocketError');
+      assert(error.name === 'RpcSocketError' || error.name === 'RpcSocketConnectTimtoutError');
     }
     assert(conn._closed === true);
     assert(conn.socket.destroyed === true);
