@@ -1,4 +1,10 @@
 
+1.3.0 / 2020-10-10
+==================
+
+**features**
+  * [[`c8fb1b8`](http://github.com/node-modules/connection/commit/c8fb1b80677e944cd6b8c976bb56675a623ed538)] - feat: add ts type definition (#5) (killa <<killa123@126.com>>)
+
 1.2.0 / 2020-08-25
 ==================
 
