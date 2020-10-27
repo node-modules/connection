@@ -56,10 +56,22 @@ export default interface Connection extends Base {
   writeRequest(req: Request): Promise<Response>;
 
   /**
+   * write heartbeat and wait heartbeatAck
+   * @param hb
+   */
+  writeHeartbeat(hb: Request): Promise<Response>;
+
+  /**
    * write response
    * @param res
    */
   writeResponse(res: Response): Promise<void>;
+
+  /**
+   * write heartbeatAck
+   * @param hb
+   */
+  writeHeartbeatAck(hb: Response): Promise<void>;
 
   /**
    * write request and not wait response
