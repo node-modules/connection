@@ -1,4 +1,10 @@
 
+1.4.0 / 2020-11-03
+==================
+
+**features**
+  * [[`8a5c908`](http://github.com/node-modules/connection/commit/8a5c908056e41453a1879b9fd45a76db76578815)] - feat: impl writeHeartbeat/writeHeartbeatAck (weijiafu14 <<1527752351@qq.com>>)
+
 1.3.0 / 2020-10-10
 ==================
 
