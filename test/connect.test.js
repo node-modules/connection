@@ -68,6 +68,7 @@ describe('connect.test.js', () => {
       logger: console,
       protocol,
       url: '2.2.2.2:12200',
+      connectTimeout: 200,
     });
     let error;
     try {

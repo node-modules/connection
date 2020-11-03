@@ -28,6 +28,7 @@ const FOO_RESPONSE = {
   appResponse: 'hello, peter',
   responseProps: null,
 };
+const FOO_HEARTBEAT = { clientUrl: 'xxx' };
 
 describe('test/connection.test.js', () => {
   afterEach(() => {
@@ -81,6 +82,19 @@ describe('test/connection.test.js', () => {
       });
     });
 
+    describe('heartbeat success', () => {
+      it('should get heartbeatAck', async () => {
+        const requestEvent = serverConn.await('heartbeat');
+        const hb = Object.assign({ timeout: 50 }, FOO_HEARTBEAT);
+        const resPromise = clientConn.writeHeartbeat(hb);
+        const serverReceivedHeartbeat = await requestEvent;
+        await serverConn.writeHeartbeatAck(serverReceivedHeartbeat);
+        const clientReceivedHeartbeatAck = await resPromise;
+        assert(serverReceivedHeartbeat.packetType === 'heartbeat');
+        assert(clientReceivedHeartbeatAck.packetType === 'heartbeat_ack');
+      });
+    });
+
     describe('encode timeout', () => {
       beforeEach(() => {
         mm(clientConn, '_writeRequest', () => {
@@ -103,12 +117,50 @@ describe('test/connection.test.js', () => {
       });
     });
 
+    describe('heartbeat encode timeout', () => {
+      beforeEach(() => {
+        mm(clientConn, '_writeHeartbeat', () => {
+          return new Promise(() => {});
+        });
+      });
+
+      it('should throw timeout error', async () => {
+        const hb = Object.assign({ timeout: 1 }, FOO_HEARTBEAT);
+        let error;
+        try {
+          await clientConn.writeHeartbeat(hb);
+        } catch (e) {
+          error = e;
+        } finally {
+          assert(error);
+          assert(error.name === 'RpcResponseTimeoutError');
+          assert(/no response in \d+ms/.test(error.message));
+        }
+      });
+    });
+
     describe('response timeout', () => {
       it('should throw timeout error', async () => {
         const req = Object.assign({ timeout: 1 }, FOO_REQUEST);
         let error;
         try {
           await clientConn.writeRequest(req);
+        } catch (e) {
+          error = e;
+        } finally {
+          assert(error);
+          assert(error.name === 'RpcResponseTimeoutError');
+          assert(/no response in \d+ms/.test(error.message));
+        }
+      });
+    });
+
+    describe('heartbeatAck timeout', () => {
+      it('should throw timeout error', async () => {
+        const hb = Object.assign({ timeout: 1 }, FOO_HEARTBEAT);
+        let error;
+        try {
+          await clientConn.writeHeartbeat(hb);
         } catch (e) {
           error = e;
         } finally {
@@ -141,6 +193,28 @@ describe('test/connection.test.js', () => {
       });
     });
 
+    describe('heartbeat encode failed', () => {
+      beforeEach(() => {
+        mm(Encoder.prototype, 'writeHeartbeat', (id, hb, err) => {
+          return err(new Error('mock error'));
+        });
+      });
+
+      it('should throw encode error', async () => {
+        const hb = Object.assign({ timeout: 50 }, FOO_HEARTBEAT);
+        let error;
+        try {
+          await clientConn.writeHeartbeat(hb);
+        } catch (e) {
+          error = e;
+        } finally {
+          assert(error);
+          assert(error.name === 'RpcRequestEncodeError');
+          assert(/mock error/.test(error.message));
+        }
+      });
+    });
+
     describe('response encode failed', () => {
       beforeEach(() => {
         mm(Encoder.prototype, 'writeResponse', (req, res, callback) => {
@@ -157,6 +231,41 @@ describe('test/connection.test.js', () => {
         let error;
         try {
           await serverConn.writeResponse(serverReceivedReq, res);
+        } catch (e) {
+          error = e;
+        } finally {
+          assert(error);
+          assert(error.name === 'RpcResponseEncodeError');
+          assert(/mock error/.test(error.message));
+        }
+        try {
+          await resPromise;
+        } catch (e) {
+          error = e;
+        } finally {
+          assert(error);
+          assert(error.name === 'RpcResponseTimeoutError');
+          assert(/no response in \d+ms/.test(error.message));
+        }
+      });
+    });
+
+    describe('heartbeatAck encode failed', () => {
+      beforeEach(() => {
+        mm(Encoder.prototype, 'writeHeartbeatAck', (hb, callback) => {
+          return callback(new Error('mock error'));
+        });
+      });
+
+      it('should throw encode error', async () => {
+        const heartbeatEvent = serverConn.await('heartbeat');
+        const hb = Object.assign({ timeout: 50 }, FOO_HEARTBEAT);
+        const resPromise = clientConn.writeHeartbeat(hb);
+        const serverReceivedHeartbeat = await heartbeatEvent;
+        const res = serverReceivedHeartbeat;
+        let error;
+        try {
+          await serverConn.writeHeartbeatAck(res);
         } catch (e) {
           error = e;
         } finally {
