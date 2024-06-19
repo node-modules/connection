@@ -11,13 +11,13 @@
     "index.d.ts"
   ],
   "dependencies": {
-    "await-event": "^2.1.0",
     "await-first": "^1.0.0",
     "pump": "^3.0.0",
     "sdk-base": "^3.5.1"
   },
   "devDependencies": {
     "@types/node": "20",
+    "await-event": "^2.1.0",
     "egg-bin": "^4.7.1",
     "eslint": "^5.2.0",
     "eslint-config-egg": "^7.0.0",
