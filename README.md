@@ -3,20 +3,14 @@
 [connection](https://github.com/node-modules/connection) socket wrapper
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
 [![Test coverage][codecov-image]][codecov-url]
-[![David deps][david-image]][david-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![npm download][download-image]][download-url]
 
 [npm-image]: https://img.shields.io/npm/v/connection.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/connection
-[travis-image]: https://img.shields.io/travis/node-modules/connection.svg?style=flat-square
-[travis-url]: https://travis-ci.org/node-modules/connection
 [codecov-image]: https://codecov.io/gh/node-modules/connection/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/node-modules/connection
-[david-image]: https://img.shields.io/david/node-modules/connection.svg?style=flat-square
-[david-url]: https://david-dm.org/node-modules/connection
 [snyk-image]: https://snyk.io/test/npm/connection/badge.svg?style=flat-square
 [snyk-url]: https://snyk.io/test/npm/connection
 [download-image]: https://img.shields.io/npm/dm/connection.svg?style=flat-square
@@ -60,7 +54,6 @@ conn.writeRequest({
   methodArgSigs: [ 'java.lang.String' ],
   requestProps: null,
 });
-
 ```
 
 ### Server Socket
@@ -90,6 +83,7 @@ server.on('connection', sock => {
 [More example](./example)
 
 ### API
+
 - oneway() - one way call
 - async writeRequest(req) - write request and wait response
 - async writeResponse(req, res) - write response
@@ -151,3 +145,19 @@ interface Protocol {
   decode(options: any): Decoder;
 }
 ```
+
+## License
+
+[MIT](LICENSE)
+
+<!-- GITCONTRIBUTOR_START -->
+
+## Contributors
+
+|[<img src="https://avatars.githubusercontent.com/u/6897780?v=4" width="100px;"/><br/><sub><b>killagu</b></sub>](https://github.com/killagu)<br/>|[<img src="https://avatars.githubusercontent.com/u/1207064?v=4" width="100px;"/><br/><sub><b>gxcsoccer</b></sub>](https://github.com/gxcsoccer)<br/>|[<img src="https://avatars.githubusercontent.com/u/360661?v=4" width="100px;"/><br/><sub><b>popomore</b></sub>](https://github.com/popomore)<br/>|[<img src="https://avatars.githubusercontent.com/u/17469139?v=4" width="100px;"/><br/><sub><b>weijiafu14</b></sub>](https://github.com/weijiafu14)<br/>|
+| :---: | :---: | :---: | :---: |
+
+
+This project follows the git-contributor [spec](https://github.com/xudafeng/git-contributor), auto updated at `Wed Jun 19 2024 17:29:25 GMT+0800`.
+
+<!-- GITCONTRIBUTOR_END -->
