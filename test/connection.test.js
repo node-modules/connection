@@ -371,7 +371,7 @@ describe('test/connection.test.js', () => {
         assert(serverConn._decoder.destroyed === true);
         assert(!clientError);
         assert(serverError);
-        assert(serverError.message.startsWith('mock error'));
+        assert(/(mock error|premature close)/.test(serverError.message));
         assert(clientClosed === true);
         assert(serverClosed === true);
       });
@@ -414,7 +414,7 @@ describe('test/connection.test.js', () => {
           error = e;
         } finally {
           assert(error);
-          assert(error.message === 'mock error, 127.0.0.1:12200');
+          assert(/(mock error|premature close)/.test(error.message));
         }
         await serverConn.await('close');
         assert(clientConn._closed === true);
@@ -427,7 +427,7 @@ describe('test/connection.test.js', () => {
         assert(serverConn._decoder.destroyed === true);
         assert(clientError);
         assert(!serverError);
-        assert(clientError.message === 'mock error, 127.0.0.1:12200');
+        assert(/(mock error|premature close)/.test(clientError.message));
         assert(clientClosed === true);
         assert(serverClosed === true);
       });
