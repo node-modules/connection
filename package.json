@@ -1,28 +1,37 @@
 {
   "name": "connection",
   "version": "1.4.0",
-  "description": "wrap for socket",
-  "dependencies": {
-    "@types/node": "^14.11.8",
-    "await-event": "^2.1.0",
-    "await-first": "^1.0.0",
-    "pump": "^3.0.0",
-    "sdk-base": "^3.5.1"
+  "engines": {
+    "node": ">= 8.0.0"
   },
+  "description": "wrap for socket",
   "files": [
     "lib",
     "index.js",
     "index.d.ts"
   ],
+  "dependencies": {
+    "await-first": "^1.0.0",
+    "pump": "^3.0.0",
+    "sdk-base": "^3.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "20",
+    "await-event": "^2.1.0",
+    "egg-bin": "^4.7.1",
+    "eslint": "^5.2.0",
+    "eslint-config-egg": "^7.0.0",
+    "git-contributor": "^2.1.5",
+    "mm": "^2.2.2",
+    "sofa-bolt-node": "^1.1.1"
+  },
   "scripts": {
-    "autod": "autod",
     "lint": "eslint . --ext .js",
-    "cov": "TEST_TIMEOUT=1000 egg-bin cov",
+    "cov": "egg-bin cov",
     "test": "npm run lint && npm run test-local",
-    "test-local": "TEST_TIMEOUT=1000 egg-bin test",
-    "pkgfiles": "egg-bin pkgfiles --check",
-    "ci": "npm run autod -- --check && npm run pkgfiles && npm run lint && npm run cov",
-    "contributors": "contributors -f plain -o AUTHORS"
+    "test-local": "egg-bin test",
+    "ci": "npm run lint && npm run cov",
+    "contributor": "git-contributor"
   },
   "repository": {
     "type": "git",
@@ -38,21 +47,5 @@
   "bugs": {
     "url": "https://github.com/node-modules/connection/issues"
   },
-  "homepage": "https://github.com/node-modules/connection#readme",
-  "devDependencies": {
-    "autod": "^3.0.1",
-    "contributors": "^0.5.1",
-    "egg-bin": "^4.7.1",
-    "egg-ci": "^1.8.0",
-    "eslint": "^5.2.0",
-    "eslint-config-egg": "^7.0.0",
-    "mm": "^2.2.2",
-    "sofa-bolt-node": "^1.1.1"
-  },
-  "engines": {
-    "node": ">= 8.0.0"
-  },
-  "ci": {
-    "version": "8, 10, 12"
-  }
+  "homepage": "https://github.com/node-modules/connection#readme"
 }
