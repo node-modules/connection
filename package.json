@@ -27,9 +27,9 @@
   },
   "scripts": {
     "lint": "eslint . --ext .js",
-    "cov": "TEST_TIMEOUT=1000 egg-bin cov",
+    "cov": "egg-bin cov",
     "test": "npm run lint && npm run test-local",
-    "test-local": "TEST_TIMEOUT=1000 egg-bin test",
+    "test-local": "egg-bin test",
     "ci": "npm run lint && npm run cov",
     "contributor": "git-contributor"
   },
